@@ -8,7 +8,6 @@ import TodoCounter from "../components/TodoCounter.js";
 
 // DOM elements
 const addTodoButton = document.querySelector(".button_action_add");
-const addTodoForm = document.forms["add-todo-form"];
 const todosList = document.querySelector(".todos__list");
 
 // Instantiate TodoCounter to track completed and total todos
@@ -32,16 +31,8 @@ const handleDelete = (todoElement, isCompleted) => {
 
 // Generate a todo DOM element and attach event listeners
 const generateTodo = (data) => {
-  const todo = new Todo(data, "#todo-template");
+  const todo = new Todo(data, "#todo-template", handleCheck, handleDelete);
   const todoElement = todo.getView();
-
-  const checkbox = todoElement.querySelector(".todo__completed");
-  checkbox.addEventListener("change", handleCheck);
-
-  const deleteBtn = todoElement.querySelector(".todo__delete-btn");
-  deleteBtn.addEventListener("click", () =>
-    handleDelete(todoElement, checkbox.checked)
-  );
 
   return todoElement;
 };
@@ -81,6 +72,7 @@ const addTodoPopup = new PopupWithForm({
     todoCounter.updateTotal(true);
 
     newTodoValidator.resetValidation();
+    addTodoPopup.getForm().reset();
     addTodoPopup.close();
   },
 });
@@ -93,5 +85,8 @@ addTodoButton.addEventListener("click", () => {
 });
 
 // Setup form validation
-const newTodoValidator = new FormValidator(validationConfig, addTodoForm);
+const newTodoValidator = new FormValidator(
+  validationConfig,
+  addTodoPopup.getForm()
+);
 newTodoValidator.enableValidation();

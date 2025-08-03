@@ -1,7 +1,10 @@
 class Todo {
-  constructor(data, selector) {
+  constructor(data, templateSelector, handleCheck, handleDelete) {
     this._data = data;
-    this._templateElement = document.querySelector(selector);
+    this._templateSelector = templateSelector;
+    this._handleCheck = handleCheck;
+    this._handleDelete = handleDelete;
+    this._templateElement = document.querySelector(templateSelector);
   }
 
   _generateCheckboxEl() {
@@ -30,14 +33,26 @@ class Todo {
     this._todoElement = this._templateElement.content
       .querySelector(".todo")
       .cloneNode(true);
+
     const todoNameEl = this._todoElement.querySelector(".todo__name");
     this._todoDate = this._todoElement.querySelector(".todo__date");
     this._todoDeleteBtn = this._todoElement.querySelector(".todo__delete-btn");
 
-    todoNameEl.textContent = this._data.name;
-
+    // Generate and configure checkbox + label
     this._generateCheckboxEl();
+
+    // Set content
+    todoNameEl.textContent = this._data.name;
     this._renderDueDate();
+
+    // Event listeners
+    this._todoCheckboxEl.addEventListener("change", () => {
+      this._handleCheck({ target: this._todoCheckboxEl });
+    });
+
+    this._todoDeleteBtn.addEventListener("click", () => {
+      this._handleDelete(this._todoElement, this._todoCheckboxEl.checked);
+    });
 
     return this._todoElement;
   }
